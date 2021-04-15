@@ -43,4 +43,18 @@ RUN apt update && \
 - This archive contains `smartctl` for armhf (32 bit ARM).
 - MegaCLI is not available for ARM architecture.
 - Contains dummy/empty files for megacli.
-- Smartctl was compiled from source on an Ubuntu Bionic Rasperry Pi.
+- Smartctl was compiled from source on an Ubuntu Bionic Rasperry Pi using this Dockerfile:
+
+```dockerfile
+FROM arm32v7/ubuntu as builder
+
+RUN apt update && \
+    apt install -y upx curl build-essential && \
+    mkdir /build && \
+    curl -sLS https://sourceforge.net/projects/smartmontools/files/smartmontools/7.2/smartmontools-7.2.tar.gz/download | \
+    tar -zxC /build && \
+    cd /build/smartmontools* && \
+    ./configure LDFLAGS="-static" && \
+    make && \
+    upx -9 smartctl && mv smartctl /
+```
